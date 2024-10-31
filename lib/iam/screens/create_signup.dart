@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       // Registro exitoso
     } else {
-      // Error en el registro
+      // Error en el registro de servicio
     }
   }*/
 
