@@ -8,7 +8,7 @@ class Servicios {
   final String recommendedSoilType;
   final String recommendedGrowingSeason;
   final String imageUrl;
-  final int userId;
+  final int userId; //services auth id
 
   const Servicios(
       {required this.id,
