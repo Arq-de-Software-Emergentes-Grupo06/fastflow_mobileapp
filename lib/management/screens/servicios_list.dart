@@ -46,7 +46,7 @@ class _ServiciosListScreenState extends State<ServiciosListScreen> {
 
   /*Future<void> _fetchProducts() async {
     final sharedPreferences = await SharedPreferences.getInstance();
-    final userId = sharedPreferences.getInt('userId');
+    final userId = sharedPreferences.getInt('userId'); //arreglar esto
     
     List<Products> products = await _productsService.getAll();
     List<Products> filteredProducts = products.where((product) {
