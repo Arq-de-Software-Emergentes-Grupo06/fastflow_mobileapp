@@ -1,13 +1,20 @@
+import 'package:fastflow_app/iam/profile_screen.dart';
 import 'package:fastflow_app/incidents/screens/incident_list_screen.dart';
 import 'package:fastflow_app/management/screens/servicios_list.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fastflow_app/management/screens/deliveries_list_screen.dart';
-
 import 'package:fastflow_app/shared/bottom_navigation_bar.dart';
 
+
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final String userName; // Agrega este parámetro
+  final String userEmail; // Agrega este parámetro
+
+  const MainScreen({
+    super.key, 
+    required this.userName, // Requerido en el constructor
+    required this.userEmail, // Requerido en el constructor
+  });
 
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -16,13 +23,19 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Lista de pantallas que corresponden a cada ítem de la barra de navegación
-  final List<Widget> _screens = [
-    ServiciosListScreen(),
-    DeliveriesListScreen(),
-    IncidentsListScreen(),
-    //ProfileScreen(), // Puedes crear una pantalla de perfil básica
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      ServiciosListScreen(),
+      DeliveriesListScreen(),
+      IncidentsListScreen(),
+      // Pasa los datos de usuario a ProfileScreen
+      ProfileScreen(userName: widget.userName, userEmail: widget.userEmail), 
+    ];
+  }
 
   void _onTabTapped(int index) {
     setState(() {

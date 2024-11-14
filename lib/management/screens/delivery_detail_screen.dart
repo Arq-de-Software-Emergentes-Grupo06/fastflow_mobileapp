@@ -1,6 +1,8 @@
+import 'package:fastflow_app/management/screens/delivery_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:fastflow_app/management/models/delivery.dart';
 import 'package:fastflow_app/management/screens/services/delivery_services.dart';
+ // Importa la pantalla de sensores
 
 class DeliveryDetailScreen extends StatefulWidget {
   final int deliveryId;
@@ -33,7 +35,6 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen> {
       setState(() {
         _isLoading = false;
       });
-      // Manejo de errores, podrías mostrar un Snackbar o alerta
     }
   }
 
@@ -51,6 +52,14 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: ListView(
                     children: [
+                      // Imagen que cubre todo el ancho de la pantalla
+                      Image.asset(
+                        'assets/car_icon.png',
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      ),
+                      const SizedBox(height: 16), // Espacio entre la imagen y el contenido
+
                       Text(
                         _delivery!.destination,
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -93,13 +102,17 @@ class _DeliveryDetailScreenState extends State<DeliveryDetailScreen> {
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () {
-                          // Lógica para iniciar la entrega
+                          // Navega a la pantalla de sensores cuando se presiona el botón
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const SensorsListScreen()),
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                         ),
-                        child: const Text('START', style: TextStyle(color: Colors.white)),
+                        child: const Text('START MONITORING', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),

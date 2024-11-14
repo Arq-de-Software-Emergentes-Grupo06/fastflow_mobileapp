@@ -23,4 +23,5 @@ flutter:
     - assets/warn.png
     - assets/safe.png
     - assets/car_icon.png
+    - assets/sensor.png
   uses-material-design: true

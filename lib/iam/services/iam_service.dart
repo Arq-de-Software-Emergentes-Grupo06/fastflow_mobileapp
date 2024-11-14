@@ -1,26 +1,24 @@
-//import 'dart:convert';
-//import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-/*class AuthService {
-  final String baseUrl = 'https://ayni-api-v2.zeabur.app/api/v1/auth';
+class AuthService {
+  final String baseUrl = 'https://safe-flow-api.sfo1.zeabur.app/api/v1/auth';
 
   Future<http.Response> signIn(String username, String password) async {
     final url = Uri.parse('$baseUrl/signin');
-    final response = await http.post(
+    return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'username': username, 'password': password}),
     );
-    return response;
   }
 
-  Future<http.Response> signUp(String username, String email, String role, String password) async {
+  Future<http.Response> signUp(String username, String email, String password) async {
     final url = Uri.parse('$baseUrl/signup');
-    final response = await http.post(
+    return await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'username': username, 'email': email, 'role': role, 'password': password}),
+      body: json.encode({'username': username, 'email': email, 'password': password}),
     );
-    return response;
   }
-}*/
+}
