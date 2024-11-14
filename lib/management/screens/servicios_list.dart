@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:fastflow_app/management/models/servicios.dart';
 import 'package:fastflow_app/management/screens/services/servicios_service.dart';
+import 'package:fastflow_app/management/screens/servicios_add_screen.dart';
 import 'package:fastflow_app/shared/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-
-
 
 class ServiciosListScreen extends StatefulWidget {
   const ServiciosListScreen({super.key});
@@ -16,53 +14,36 @@ class ServiciosListScreen extends StatefulWidget {
 
 class _ServiciosListScreenState extends State<ServiciosListScreen> {
   final ServiciosService _serviciosService = ServiciosService();
-  List<Servicios> _products = [];
-  List<Servicios> _shuffledProducts = [];
+  List<Servicios> _services = [];
   List<Servicios> _searchResults = [];
   bool _isLoading = true;
-  Timer? _timer;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    //_fetchProducts();
-    _startShuffleTimer();
+    _fetchServices();
     _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
-  void _startShuffleTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 10), (Timer timer) {
-      _shuffleProducts();
-    });
-  }
-
-  /*Future<void> _fetchProducts() async {
-    final sharedPreferences = await SharedPreferences.getInstance();
-    final userId = sharedPreferences.getInt('userId');
-    
-    List<Products> products = await _productsService.getAll();
-    List<Products> filteredProducts = products.where((product) {
-      return product.userId == userId;
-    }).toList();
-    setState(() {
-      _products = filteredProducts;
-      _shuffledProducts = List.of(filteredProducts);
-      _isLoading = false;
-    });
-  }*/
-
-  void _shuffleProducts() {
-    setState(() {
-      _shuffledProducts.shuffle(Random());
-    });
+  Future<void> _fetchServices() async {
+    try {
+      List<Servicios> services = await _serviciosService.getAll();
+      setState(() {
+        _services = services;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _onSearchChanged() {
@@ -71,11 +52,22 @@ class _ServiciosListScreenState extends State<ServiciosListScreen> {
       if (searchQuery.isEmpty) {
         _searchResults.clear();
       } else {
-        _searchResults = _products.where((product) {
-          return product.name.toLowerCase().contains(searchQuery);
+        _searchResults = _services.where((service) {
+          return service.nameService.toLowerCase().contains(searchQuery);
         }).toList();
       }
     });
+  }
+
+  Future<void> _navigateToAddService() async {
+    bool? added = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ServiciosAddScreen()),
+    );
+
+    if (added == true) {
+      _fetchServices(); // Actualiza la lista después de añadir un servicio
+    }
   }
 
   @override
@@ -100,26 +92,35 @@ class _ServiciosListScreenState extends State<ServiciosListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(16.0),
                     child: Text(
                       'Welcome',
-                      style: TextStyle(fontSize: 35),
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.left,
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Container(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(10.0),
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Column(
                         children: [
-                          const Text('Find your product',
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white)),
+                          const Text(
+                            'Find your service',
+                            style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Expanded(
@@ -129,9 +130,9 @@ class _ServiciosListScreenState extends State<ServiciosListScreen> {
                                     fillColor: Colors.white,
                                     filled: true,
                                     border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
-                                    hintText: 'Search',
+                                    hintText: 'Search for a service...',
                                   ),
                                 ),
                               ),
@@ -145,162 +146,136 @@ class _ServiciosListScreenState extends State<ServiciosListScreen> {
                       ),
                     ),
                   ),
+                  const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'Services On Going',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    ),
+                  ),
                   _searchController.text.isNotEmpty
                       ? _buildSearchResults()
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text('Latest Crops', style: TextStyle(fontSize: 24)),
-                                  GestureDetector(
-                                    onTap: () {
-                                      /*Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const CropsListScreen()),
-                                      );*/
-                                    },
-                                    child: const Text('See All ->',
-                                        style: TextStyle(color: Colors.red)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 200,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _shuffledProducts.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(10.0),
-                                          child: Image.network(
-                                              _shuffledProducts[index].imageUrl,
-                                              width: 100,
-                                              height: 150,
-                                              fit: BoxFit.cover),
-                                        ),
-                                        Positioned(
-                                          top: 8.0,
-                                          left: 8.0,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0, vertical: 4.0),
-                                            child: Text(
-                                              _shuffledProducts[index].name,
-                                              style: const TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Text('Products On Sale',
-                                  style: TextStyle(fontSize: 24)),
-                            ),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _products.length,
-                              separatorBuilder: (context, index) {
-                                return const Divider();
-                              },
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  contentPadding: const EdgeInsets.all(8.0),
-                                  title: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(_products[index].name,
-                                          style: const TextStyle(fontSize: 16)),
-                                      Text(
-                                        _products[index].description.length > 50
-                                            ? '${_products[index].description
-                                                    .substring(0, 50)}...'
-                                            : _products[index].description,
-                                        style: const TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
-                                  trailing: ClipOval(
-                                    child: Image.network(_products[index].imageUrl,
-                                        width: 50, height: 50, fit: BoxFit.cover),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
+                      : _buildServicesList(),
                 ],
               ),
             ),
-            bottomNavigationBar: BottomNavBar(currentIndex: 0, 
-            onTap: (index){
-          switch(index){
-  case 0:
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (context) => const ProductsListScreen()));
-    break;
-  case 1:
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (context) => const CropsListScreen()));
-    break;
-  case 2:
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (context) => const SalesListScreen()));
-    break;
-  case 3:
-    // Navigator.push(context, MaterialPageRoute(
-    //   builder: (context) => const TransactionListScreen2()));
-    break;
-}
-        }),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddService,
+        backgroundColor: Colors.orange,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
   Widget _buildSearchResults() {
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _searchResults.length,
-      separatorBuilder: (context, index) => const Divider(),
       itemBuilder: (context, index) {
-        return ListTile(
-          contentPadding: const EdgeInsets.all(8.0),
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_searchResults[index].name, style: const TextStyle(fontSize: 16)),
-              Text(
-                _searchResults[index].description.length > 50
-                    ? '${_searchResults[index].description.substring(0, 50)}...'
-                    : _searchResults[index].description,
-                style: const TextStyle(color: Colors.grey),
+        return _buildServiceTile(_searchResults[index]);
+      },
+    );
+  }
+
+  Widget _buildServicesList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _services.length,
+      itemBuilder: (context, index) {
+        return _buildServiceTile(_services[index]);
+      },
+    );
+  }
+
+  Widget _buildServiceTile(Servicios service) {
+    // Definir el color del texto y la imagen según el valor de incidents
+    Color textColor;
+    String? imagePath;
+
+    if (service.incidents == "No one") {
+      textColor = Colors.green;
+      imagePath = 'assets/safe.png';
+    } else if (service.incidents == "Gas Leak" || service.incidents == "High Temperature") {
+      textColor = Colors.red;
+      imagePath = 'assets/warn.png';
+    } else {
+      textColor = Colors.grey; // Color por defecto si no coincide con ninguna condición
+      imagePath = null; // No mostrar imagen adicional
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16.0),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              service.nameService,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              service.description.length > 50
+                  ? '${service.description.substring(0, 50)}...'
+                  : service.description,
+              style: const TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(
+                  Icons.warning,
+                  color: textColor,
+                  size: 16,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  "Incidents: ${service.incidents}",
+                  style: TextStyle(color: textColor, fontWeight: FontWeight.w500, fontSize: 14),
+                ),
+              ],
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipOval(
+              child: Image.asset(
+                'assets/service_placeholder.png',
+                width: 48,
+                height: 48,
+                fit: BoxFit.cover,
+              ),
+            ),
+            if (imagePath != null) ...[
+              const SizedBox(width: 8),
+              Image.asset(
+                imagePath,
+                width: 24,
+                height: 24,
+                fit: BoxFit.cover,
               ),
             ],
-          ),
-          trailing: ClipOval(
-            child: Image.network(_searchResults[index].imageUrl,
-                width: 50, height: 50, fit: BoxFit.cover),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

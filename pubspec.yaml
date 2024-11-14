@@ -19,4 +19,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/icon.png
+    - assets/service_placeholder.png
+    - assets/warn.png
+    - assets/safe.png
+    - assets/car_icon.png
   uses-material-design: true
