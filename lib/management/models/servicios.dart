@@ -1,36 +1,28 @@
 class Servicios {
-  final int id;
-  final String name;
+  final int? id; // Cambiado a `int?` para permitir que sea nulo cuando se crea un nuevo servicio
+  final String nameService;
   final String description;
-  final String recommendedCultivationDistance;
-  final String recommendedCultivationDepth;
-  final String recommendedGrowingClimate;
-  final String recommendedSoilType;
-  final String recommendedGrowingSeason;
-  final String imageUrl;
-  final int userId;
+  final String incidents;
 
-  const Servicios(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.recommendedCultivationDistance,
-      required this.recommendedCultivationDepth,
-      required this.recommendedGrowingClimate,
-      required this.recommendedSoilType,
-      required this.recommendedGrowingSeason,
-      required this.imageUrl,
-      required this.userId});
+  Servicios({
+    this.id,
+    required this.nameService,
+    required this.description,
+    required this.incidents,
+  });
 
   Servicios.fromJson(Map<String, dynamic> map)
       : id = map["id"],
-        name = map["name"],
+        nameService = map["nameService"],
         description = map["description"],
-        recommendedCultivationDistance = map["recommendedCultivationDistance"],
-        recommendedCultivationDepth = map["recommendedCultivationDepth"],
-        recommendedGrowingClimate = map["recommendedGrowingClimate"],
-        recommendedSoilType = map["recommendedSoilType"],
-        recommendedGrowingSeason = map["recommendedGrowingSeason"],
-        imageUrl = map["imageUrl"],
-        userId = map["userId"];
+        incidents = map["incidents"];
+
+  // Método para convertir el objeto a JSON
+  Map<String, dynamic> toJson() {
+    return {
+      "nameService": nameService,
+      "description": description,
+      "incidents": incidents,
+    };
+  }
 }
